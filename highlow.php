@@ -2,8 +2,6 @@
 
 $answer = mt_rand(1, 100);
 
-`say Welcome to the high low game`;
-
 fwrite(STDOUT, 'Welcome to the High/Low Game!!!' . PHP_EOL);
 
 fwrite(STDOUT, 'Please guess the number I am thinking of between 1 and 100' . PHP_EOL);

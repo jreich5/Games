@@ -21,6 +21,15 @@
             background-color: rgb(127,127,255);
         }
 
+        .startMessage {
+            color: white;
+            position: relative;
+            bottom: 350px;
+            width: 1000px;
+            text-align: center;
+            text-shadow: 2px 2px black;
+
+        }
     </style>
 
 </head>
@@ -30,6 +39,7 @@
     <main class="container">
         <h1>Snake Attack!</h1>
         <canvas id="canvas" width="1000" height="600"></canvas>
+        <h2 class="startMessage" id="startMessage">Press Space to Start</h2>
     </main>
     
     <!-- jQuery Version 1.11.1 -->
@@ -43,6 +53,7 @@
     <script>
         var canvas = document.getElementById("canvas");
         var ctx = canvas.getContext("2d");
+        var startMessage = document.getElementById("startMessage");
         var x = 0; // snake position on x axis
         var y = 0; // snake position on y axis
         var canvasColor = "rgb(125,125,255)";
@@ -55,6 +66,7 @@
         var snakeWidth = 40;
         var creepDistance = 1;
         var speed = 10;
+        var intervalId;
 
         // size of snake
         function fillIt() {
@@ -150,8 +162,12 @@
         }
         
         function startGame() {
-            setInterval(function(orientation) {
+            creepDistance = 1;
+            startMessage.className += ' hidden';
+            window.clearInterval(intervalId);
+            intervalId = setInterval(function(orientation) {
                 orientation = currentDirection;
+                console.log("On");
                 switch(orientation) {
                     case 'up':
                         direction.up();
@@ -170,7 +186,22 @@
                         break;
                 }
             }, speed);
+            console.log(speed);
+            console.log(creepDistance);
         } 
+
+        function stopGame() {
+            creepDistance = 0;
+            window.clearInterval(intervalId);
+            startState();
+        }
+
+        window.onkeydown = function(e) {
+            if(e.keyCode == 32 && e.target == document.body) {
+                e.preventDefault();
+                return false;
+            }
+        };
 
         // Event Listeners
         document.addEventListener('keydown', function(event) {
@@ -181,6 +212,14 @@
             if (event.which === 39) {
                 console.log("RIGHT");
                 deriveOrientation('right');
+            }
+            if (event.which === 32) {
+                event.preventDefault();
+                startGame();
+            }
+            if (event.which === 27) {
+                console.log('Esc');
+                stopGame();
             }
         });
 
@@ -223,22 +262,27 @@
 
         // ++++++++++++++++++++++++++++++++++++++++ Procedural Code ++++++++++++++++++++++++++++++++++++++++
 
+        function startState() {
+            x = 0;
+            y = 0;
+            ctx.fillStyle = "rgb(125,125,255)";
+            ctx.fillRect(0, 0, canvasHeight, canvasWidth);
+            ctx.fillStyle = "lime";
+            ctx.fillRect(x, y, snakeHeight, snakeWidth);
 
-        ctx.fillStyle = "green";
-        ctx.fillRect(x, y, snakeHeight, snakeWidth);
+            // left eye
+            ctx.fillStyle = "black";
+            ctx.fillRect((x + (snakeWidth * .75)), (y + (snakeWidth * .35)), (snakeWidth * .05), (snakeWidth * .05));
 
-        // left eye
-        ctx.fillStyle = "black";
-        ctx.fillRect((x + (snakeWidth * .75)), (y + (snakeWidth * .35)), (snakeWidth * .05), (snakeWidth * .05));
+            // right eye
+            ctx.fillStyle = "black";
+            ctx.fillRect((x + (snakeWidth * .75)), (y + (snakeWidth * .65)), (snakeWidth * .05), (snakeWidth * .05));
+            
+        }
 
-        // right eye
-        ctx.fillStyle = "black";
-        ctx.fillRect((x + (snakeWidth * .75)), (y + (snakeWidth * .65)), (snakeWidth * .05), (snakeWidth * .05));
 
- 
         
-        
-        startGame();
+        // startGame();
 
     
         

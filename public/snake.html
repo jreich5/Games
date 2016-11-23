@@ -1,4 +1,4 @@
-<!-- pu.dev/snake.html -->
+<!-- games.dev/snake.html -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -18,7 +18,7 @@
 
     <style type="text/css">
         canvas {
-            background-color: rgb(27,27,255);
+            background-color: rgb(127,127,255);
         }
 
     </style>
@@ -28,10 +28,8 @@
 <body>
 
     <main class="container">
-        <h1>Snake Game</h1>
+        <h1>Snake Attack!</h1>
         <canvas id="canvas" width="1000" height="600"></canvas>
-        
-
     </main>
     
     <!-- jQuery Version 1.11.1 -->
@@ -47,14 +45,14 @@
         var ctx = canvas.getContext("2d");
         var x = 0; // snake position on x axis
         var y = 0; // snake position on y axis
-        var canvasColor = "rgb(0,0,255)";
-        var snakeColor = "green";
+        var canvasColor = "rgb(125,125,255)";
+        var snakeColor = "lime";
         var currentDirection = 'right';
         var game = true;
         var canvasHeight = document.getElementById("canvas").getAttribute("height");
         var canvasWidth = document.getElementById("canvas").getAttribute("width");
-        var snakeHeight = 50;
-        var snakeWidth = 50;
+        var snakeHeight = 40;
+        var snakeWidth = 40;
         var creepDistance = 1;
         var speed = 10;
 

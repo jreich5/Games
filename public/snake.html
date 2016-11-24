@@ -75,11 +75,50 @@
         var intervalId;
         var roundCounter = document.getElementById("roundCounter");
         var intervalArray = [];
+        var centerX = canvas.width / 2;
+        var centerY = canvas.height / 2;
+        var radius = 5;
 
         // size of snake
         function fillIt() {
             ctx.fillRect(x, y, snakeWidth, snakeHeight);
         } 
+
+        function randomX() {
+            randomNumber = Math.floor(Math.random() * 490);
+            randomPlusMinus = Math.floor(Math.random() * 2);
+            if (randomPlusMinus == 1) {
+                return randomNumber;
+            } else {
+                return randomNumber * -1;
+            }
+        }
+
+        function randomY() {
+            randomNumber = Math.floor(Math.random() * 285);
+            randomPlusMinus = Math.floor(Math.random() * 2);
+            if (randomPlusMinus == 1) {
+                return randomNumber;
+            } else {
+                return randomNumber * -1;
+            }
+        }
+
+        function fillFood() {
+            ctx.beginPath();
+            ctx.arc(centerX + randomX(), centerY + randomY(), radius, 0, 2 * Math.PI, false);
+            ctx.fillStyle = 'red';
+            ctx.fill();
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = '#003300';
+            ctx.stroke();
+        }
+
+        function generateFood() {
+            for(var i = 0; i < 5; i ++) {
+                fillFood();
+            }
+        }
 
         function fillEyes(direction) {
             switch(direction) {
@@ -171,6 +210,9 @@
         
         function nextRound() {
             creepDistance = 1;
+            ctx.fillStyle = "rgb(125,125,255)";
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+            generateFood();
             setRound(true);
             startMessage.className += ' hidden';
             // window.clearInterval(intervalId);
@@ -309,15 +351,9 @@
             ctx.fillRect((x + (snakeWidth * .75)), (y + (snakeWidth * .65)), (snakeWidth * .05), (snakeWidth * .05));
         }
 
-
-        
         // nextRound();
 
     
-        
-
-
-
     </script>
 
 </body>

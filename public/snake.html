@@ -17,6 +17,10 @@
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
     <style type="text/css">
+        main {
+            height: 669px;
+        }
+
         canvas {
             background-color: rgb(127,127,255);
         }
@@ -25,11 +29,11 @@
             color: white;
             position: relative;
             bottom: 350px;
-            width: 1000px;
+            width: 1140px;
             text-align: center;
             text-shadow: 2px 2px black;
-
         }
+
     </style>
 
 </head>
@@ -37,9 +41,11 @@
 <body>
 
     <main class="container">
-        <h1>Snake Attack!</h1>
-        <canvas id="canvas" width="1000" height="600"></canvas>
+        <h1 id="roundCounter" class="pull-right rounds hidden">Round <span id="roundNumber"></span></h1>
+        <h1>SNAKE ATTACK!</h1>
+        <canvas id="canvas" width="1140" height="600"></canvas>
         <h2 class="startMessage" id="startMessage">Press Space to Start</h2>
+
     </main>
     
     <!-- jQuery Version 1.11.1 -->
@@ -67,10 +73,12 @@
         var creepDistance = 1;
         var speed = 10;
         var intervalId;
+        var roundCounter = document.getElementById("roundCounter");
+        var intervalArray = [];
 
         // size of snake
         function fillIt() {
-            ctx.fillRect(x, y, snakeHeight, snakeWidth);
+            ctx.fillRect(x, y, snakeWidth, snakeHeight);
         } 
 
         function fillEyes(direction) {
@@ -161,10 +169,11 @@
                 }
         }
         
-        function startGame() {
+        function nextRound() {
             creepDistance = 1;
+            setRound(true);
             startMessage.className += ' hidden';
-            window.clearInterval(intervalId);
+            // window.clearInterval(intervalId);
             intervalId = setInterval(function(orientation) {
                 orientation = currentDirection;
                 console.log("On");
@@ -186,14 +195,21 @@
                         break;
                 }
             }, speed);
-            console.log(speed);
-            console.log(creepDistance);
+            intervalArray.push(intervalId);
         } 
+
+        function clearTimers() {
+            intervalArray.forEach(function(element, index, array) {
+                window.clearInterval(element);
+            });
+        }
 
         function stopGame() {
             creepDistance = 0;
-            window.clearInterval(intervalId);
+            startMessage.className = "startMessage"; 
+            clearTimers()
             startState();
+            setRound(false);
         }
 
         window.onkeydown = function(e) {
@@ -215,13 +231,24 @@
             }
             if (event.which === 32) {
                 event.preventDefault();
-                startGame();
+                nextRound();
             }
             if (event.which === 27) {
                 console.log('Esc');
                 stopGame();
             }
         });
+
+        function setRound(state) {            
+            if (state === true) {
+                roundCounter.className = "pull-right rounds";
+                // roundNumber = Number(roundNumber.innerHTML) + 1;
+                document.getElementById('roundNumber').innerHTML = Number(document.getElementById('roundNumber').innerHTML) + 1;
+            } else {
+                roundCounter.className = "pull-right rounds hidden";
+                document.getElementById('roundNumber').innerHTML = 0;
+            }
+        }
 
         function deriveOrientation(command) {
             switch(command) {
@@ -265,10 +292,13 @@
         function startState() {
             x = 0;
             y = 0;
+            
+            currentDirection = 'right';
+
             ctx.fillStyle = "rgb(125,125,255)";
-            ctx.fillRect(0, 0, canvasHeight, canvasWidth);
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
             ctx.fillStyle = "lime";
-            ctx.fillRect(x, y, snakeHeight, snakeWidth);
+            ctx.fillRect(x, y, snakeWidth, snakeHeight);
 
             // left eye
             ctx.fillStyle = "black";
@@ -277,12 +307,11 @@
             // right eye
             ctx.fillStyle = "black";
             ctx.fillRect((x + (snakeWidth * .75)), (y + (snakeWidth * .65)), (snakeWidth * .05), (snakeWidth * .05));
-            
         }
 
 
         
-        // startGame();
+        // nextRound();
 
     
         

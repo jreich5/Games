@@ -17,6 +17,7 @@
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
     <style type="text/css">
+
         main {
             height: 669px;
         }
@@ -57,6 +58,7 @@
     <!-- Custom JS -->
 
     <script>
+        'use strict';
         var canvas = document.getElementById("canvas");
         var ctx = canvas.getContext("2d");
         var startMessage = document.getElementById("startMessage");
@@ -71,6 +73,8 @@
         var snakeHeight = 40;
         var snakeWidth = 40;
         var creepDistance = 1;
+        var foodObject = {};
+        var foodArray = [];
         var speed = 10;
         var intervalId;
         var roundCounter = document.getElementById("roundCounter");
@@ -85,8 +89,8 @@
         } 
 
         function randomX() {
-            randomNumber = Math.floor(Math.random() * 490);
-            randomPlusMinus = Math.floor(Math.random() * 2);
+            var randomNumber = Math.floor(Math.random() * 490);
+            var randomPlusMinus = Math.floor(Math.random() * 2);
             if (randomPlusMinus == 1) {
                 return randomNumber;
             } else {
@@ -95,8 +99,8 @@
         }
 
         function randomY() {
-            randomNumber = Math.floor(Math.random() * 285);
-            randomPlusMinus = Math.floor(Math.random() * 2);
+            var randomNumber = Math.floor(Math.random() * 285);
+            var randomPlusMinus = Math.floor(Math.random() * 2);
             if (randomPlusMinus == 1) {
                 return randomNumber;
             } else {
@@ -104,25 +108,64 @@
             }
         }
 
-        function fillFood() {
+        function fillFood(color1 = 'red', color2 = '#003300', xCoordinate = randomX(), yCoordinate = randomY()) {
+            var randomObject = {};
+            randomObject.randomCoordinateX = xCoordinate;
+            randomObject.randomCoordinateY = yCoordinate;
             ctx.beginPath();
-            ctx.arc(centerX + randomX(), centerY + randomY(), radius, 0, 2 * Math.PI, false);
-            ctx.fillStyle = 'red';
+            ctx.arc(centerX + randomObject.randomCoordinateX, centerY + randomObject.randomCoordinateY, radius, 0, 2 * Math.PI, false);
+            ctx.fillStyle = color1;
             ctx.fill();
             ctx.lineWidth = 1;
-            ctx.strokeStyle = '#003300';
+            ctx.strokeStyle = color2;
             ctx.stroke();
+            return randomObject;
+        }
+
+        function fillOverFood(color, xCoordinate, yCoordinate) {
+            ctx.fillStyle = color;
+            ctx.fillRect(xCoordinate, yCoordinate, 12, 12);
         }
 
         function generateFood() {
-            for(var i = 0; i < 5; i ++) {
-                fillFood();
+            foodArray = [];
+            for (var i = 0; i < 5; i ++) {
+                foodArray.push(fillFood());
             }
         }
 
+        function eatFood() {
+            foodArray.forEach(function(element, index, array) {
+                    // Hit boxes for food
+                    switch(currentDirection) {
+                        case 'up':
+                            if (y == centerY + element.randomCoordinateY - 5 && x >= centerX + element.randomCoordinateX - 50 && x <= centerX + element.randomCoordinateX + 5) {
+                                fillOverFood(canvasColor, centerX + element.randomCoordinateX - 6, centerY + element.randomCoordinateY - 6);
+                            }
+                            break;
+                        case 'down':
+                            if (y == centerY + element.randomCoordinateY - 40 && x >= centerX + element.randomCoordinateX - 50 && x <= centerX + element.randomCoordinateX + 5) {
+                                fillOverFood(canvasColor, centerX + element.randomCoordinateX - 6, centerY + element.randomCoordinateY - 6);
+                            }
+                            break;
+                        case 'left':
+                            if (y >= centerY + element.randomCoordinateY - 45 && y <= centerY + element.randomCoordinateY + 5 && x == centerX + element.randomCoordinateX - 5) {
+                                fillOverFood(canvasColor, centerX + element.randomCoordinateX - 6, centerY + element.randomCoordinateY - 6);
+                            }
+                            break;
+                        case 'right':
+                            if (y >= centerY + element.randomCoordinateY - 45 && y <= centerY + element.randomCoordinateY + 5 && x == centerX + element.randomCoordinateX - 40) {
+                                fillOverFood(canvasColor, centerX + element.randomCoordinateX - 6, centerY + element.randomCoordinateY - 6);
+                            }
+                            break;
+                    }
+            
+            });
+        }
+                    
+
         function fillEyes(direction) {
             switch(direction) {
-                // (y + snakeWidth * .75) 
                 case 'up':
                     // left eye
                     ctx.fillStyle = "black";
@@ -218,7 +261,7 @@
             // window.clearInterval(intervalId);
             intervalId = setInterval(function(orientation) {
                 orientation = currentDirection;
-                console.log("On");
+                eatFood();
                 switch(orientation) {
                     case 'up':
                         direction.up();
@@ -264,11 +307,9 @@
         // Event Listeners
         document.addEventListener('keydown', function(event) {
             if (event.which === 37) {
-                console.log("LEFT");
                 deriveOrientation('left');
             }
             if (event.which === 39) {
-                console.log("RIGHT");
                 deriveOrientation('right');
             }
             if (event.which === 32) {
@@ -276,7 +317,6 @@
                 nextRound();
             }
             if (event.which === 27) {
-                console.log('Esc');
                 stopGame();
             }
         });

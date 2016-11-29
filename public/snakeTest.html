@@ -74,7 +74,7 @@
         var radius = 5;
         var snakeHeight = 40;
         var snakeWidth = 40;
-        var speed = 10;
+        var speed = 20;
 
 
         var x = 0; // snake position on x axis
@@ -91,8 +91,10 @@
         var posEndX = 0;
         var posEndY = 0;
         var currentEndDirection = 'right';
+        var iterator = 0;
+        var snakePositionHistory = [];
+        var endSnakeData;
 
-        var snakePositionHistory = {};
 
 
         // size of snake
@@ -106,6 +108,7 @@
         function fillItUp(color = 'lime') {
             ctx.beginPath();
             ctx.moveTo(x, y);
+            ctx.lineWidth = 2;
             ctx.lineTo(x - 40, y);
             ctx.strokeStyle = color;
             ctx.stroke();
@@ -115,7 +118,8 @@
         function fillItDown(color = 'lime') {
             ctx.beginPath();
             ctx.moveTo(x - 40, y + 40);
-            ctx.lineTo(x, y + 40);
+            ctx.lineWidth = 2;
+            ctx.lineTo(x + 1, y + 40);
             ctx.strokeStyle = color;
             ctx.stroke();
 
@@ -124,8 +128,9 @@
 
         function fillItLeft(color = 'lime') {
             ctx.beginPath();
-            ctx.moveTo(x - 40, y + 40);
-            ctx.lineTo(x - 40, y);
+            ctx.moveTo(x - 40, y + 41);
+            ctx.lineWidth = 2;
+            ctx.lineTo(x - 40, y + 1);
             ctx.strokeStyle = color;
             ctx.stroke();
 
@@ -134,6 +139,7 @@
         function fillItRight(color = 'lime') {
             ctx.beginPath();
             ctx.moveTo(x, y);
+            ctx.lineWidth = 2;
             ctx.lineTo(x, y + 40);
             ctx.strokeStyle = color;
             ctx.stroke();
@@ -143,48 +149,141 @@
 
 
         var direction = {
-            up : function() {
+            up : function(color = snakeColor) {
                     if (y > 0) {
-                        ctx.fillStyle = canvasColor;
-                        fillItUp();
+                        
                         y -= creepDistance;
-                        ctx.fillStyle = snakeColor;
+                        ctx.fillStyle = color;
                         fillItUp();
-                        fillEyes('up');
+                        // fillEyes('up');
                     }    
                 },
-            down : function() {
+            down : function(color = snakeColor) {
                     if (y < canvasHeight - snakeWidth) {
-                        ctx.fillStyle = canvasColor;
-                        fillItDown();
+                        
                         y += creepDistance;
-                        ctx.fillStyle = snakeColor;
+                        ctx.fillStyle = color;
                         fillItDown();
-                        fillEyes('down');
+                        // fillEyes('down');
                     }    
                 },
-            left : function() {
+            left : function(color = snakeColor) {
                     if (x > 0) {
-                        ctx.fillStyle = canvasColor;
-                        fillItLeft();
+                        
                         x -= creepDistance;
-                        ctx.fillStyle = snakeColor;
+                        ctx.fillStyle = color;
                         fillItLeft();
-                        fillEyes('left');
+                        // fillEyes('left');
                     }    
                 },
-            right : function() {
+            right : function(color = snakeColor) {
                     if (x < canvasWidth - snakeWidth) {
-                        ctx.fillStyle = canvasColor;
-                        fillItRight();
+                        
                         x += creepDistance;
-                        ctx.fillStyle = snakeColor;
+                        ctx.fillStyle = color;
                         fillItRight();
-                        fillEyes('right');
+                        // fillEyes('right');
                     }    
                 }
         }
-        
+
+
+        // ++++++++++++++++++++++++++++++++++++++++++++++++++++ END OF SNAKE DIRECTION and FILL ++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+        function fillEndUp(color = canvasColor) {
+            ctx.beginPath();
+            ctx.moveTo(posEndX, posEndY);
+            ctx.lineWidth = 2;
+            ctx.lineTo(posEndX - 40, posEndY);
+            ctx.strokeStyle = color;
+            ctx.stroke();
+        } 
+
+        function fillEndDown(color = canvasColor) {
+            ctx.beginPath();
+            ctx.moveTo(posEndX - 40, posEndY + 40);
+            ctx.lineWidth = 2;
+            ctx.lineTo(posEndX + 1, posEndY + 40);
+            ctx.strokeStyle = color;
+            ctx.stroke();
+        } 
+
+        function fillEndLeft(color = canvasColor) {
+            ctx.beginPath();
+            ctx.moveTo(posEndX - 40, posEndY + 40);
+            ctx.lineWidth = 2;
+            ctx.lineTo(posEndX - 40, posEndY + 1);
+            ctx.strokeStyle = color;
+            ctx.stroke();
+        } 
+
+        function fillEndRight(color = canvasColor) {
+            ctx.beginPath();
+            ctx.moveTo(posEndX, posEndY);
+            ctx.lineWidth = 2;
+            ctx.lineTo(posEndX, posEndY + 40);
+            ctx.strokeStyle = color;
+            ctx.stroke();
+        } 
+
+        var endDirection = {
+            up : function(positionX, positionY) {
+                    if (posEndY > 0) {
+                        
+                        posEndX = positionX;
+                        posEndY = positionY;
+                        ctx.fillStyle = canvasColor;
+                        fillEndUp();
+                        // fillEyes('up');
+                    }    
+                },
+            down : function(positionX, positionY) {
+                    if (posEndY < canvasHeight - snakeWidth) {
+                        
+                        posEndX = positionX;
+                        posEndY = positionY;
+                        ctx.fillStyle = canvasColor;
+                        fillEndDown();
+                        // fillEyes('down');
+                    }    
+                },
+            left : function(positionX, positionY) {
+                    if (posEndX > 0) {
+                        
+                        posEndX = positionX;
+                        posEndY = positionY;
+                        ctx.fillStyle = canvasColor;
+                        fillEndLeft();
+                        // fillEyes('left');
+                    }    
+                },
+            right : function(positionX, positionY) {
+                    if (posEndX < canvasWidth - snakeWidth) {
+                        
+                        posEndX = positionX;
+                        posEndY = positionY;
+                        ctx.fillStyle = canvasColor;
+                        fillEndRight();
+                        // fillEyes('right');
+                    }    
+                }
+        }
+
+
+
+
+
+
+
+        function createContext() {
+            var timeInfo = {};
+            timeInfo.xPlace = x;
+            timeInfo.yPlace = y;
+            timeInfo.direction = currentDirection;
+            return timeInfo;
+        }
+
+        // +++++++++++++++++++++++++++++++ RUNS GAME +++++++++++++++++++++++++++++++ //
         function nextRound() {
             creepDistance = 1;
             ctx.fillStyle = "rgb(125,125,255)";
@@ -194,6 +293,13 @@
             startMessage.className += ' hidden';
             // window.clearInterval(intervalId);
             intervalId = setInterval(function(orientation) {
+            
+                iterator ++;
+
+                snakePositionHistory.push(createContext());
+
+                endSnakeData = snakePositionHistory[snakePositionHistory.length - 100];
+
                 orientation = currentDirection;
                 eatFood();
                 switch(orientation) {
@@ -211,8 +317,27 @@
 
                     case 'right':
                         direction.right();
-        
                         break;
+                }
+
+                if (endSnakeData) {
+                    switch(endSnakeData.direction) {
+                        case 'up':
+                            endDirection.up(endSnakeData.xPlace, endSnakeData.yPlace);
+                            break;
+
+                        case 'down':
+                            endDirection.down(endSnakeData.xPlace, endSnakeData.yPlace);
+                            break;
+
+                        case 'left':
+                            endDirection.left(endSnakeData.xPlace, endSnakeData.yPlace);
+                            break;
+
+                        case 'right':
+                            endDirection.right(endSnakeData.xPlace, endSnakeData.yPlace);
+                            break;
+                    }
                 }
             }, speed);
             intervalArray.push(intervalId);
@@ -226,6 +351,7 @@
 
         function stopGame() {
             creepDistance = 0;
+            snakePositionHistory = [];
             startMessage.className = "startMessage"; 
             clearTimers()
             startState();
@@ -303,12 +429,6 @@
                     break;
             }  
         }
-
-
-
-
-
-
 
 
         function randomX() {
@@ -435,10 +555,6 @@
 
 
 
-
-
-        // ++++++++++++++++++++++++++++++++++++++++ Procedural Code ++++++++++++++++++++++++++++++++++++++++
-
         function startState() {
             x = 0;
             y = 0;
@@ -458,6 +574,10 @@
             ctx.fillStyle = "black";
             ctx.fillRect((x + (snakeWidth * .75)), (y + (snakeWidth * .65)), (snakeWidth * .05), (snakeWidth * .05));
         }
+
+
+        // ++++++++++++++++++++++++++++++++++++++++ Procedural Code ++++++++++++++++++++++++++++++++++++++++
+
 
         // nextRound();
 

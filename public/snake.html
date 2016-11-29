@@ -82,6 +82,16 @@
         var centerX = canvas.width / 2;
         var centerY = canvas.height / 2;
         var radius = 5;
+        var snakeEndDistance = 100;
+
+        // End of Snake Eraser Variables
+
+        var posEndX = 0;
+        var posEndY = 0;
+        var currentEndDirection = 'right';
+        var iterator = 1;
+        var snakePositionHistory = [];
+        var endSnakeData;
 
         // size of snake
         function fillIt() {
@@ -135,7 +145,7 @@
         }
 
         function endOfSnake() {
-            
+
         }
 
         function eatFood() {
@@ -214,8 +224,8 @@
         var direction = {
             up : function() {
                     if (y > 0) {
-                        ctx.fillStyle = canvasColor;
-                        fillIt();
+                        // ctx.fillStyle = canvasColor;
+                        // fillIt();
                         y -= creepDistance;
                         ctx.fillStyle = snakeColor;
                         fillIt();
@@ -224,8 +234,8 @@
                 },
             down : function() {
                     if (y < canvasHeight - snakeWidth) {
-                        ctx.fillStyle = canvasColor;
-                        fillIt();
+                        // ctx.fillStyle = canvasColor;
+                        // fillIt();
                         y += creepDistance;
                         ctx.fillStyle = snakeColor;
                         fillIt();
@@ -234,8 +244,8 @@
                 },
             left : function() {
                     if (x > 0) {
-                        ctx.fillStyle = canvasColor;
-                        fillIt();
+                        // ctx.fillStyle = canvasColor;
+                        // fillIt();
                         x -= creepDistance;
                         ctx.fillStyle = snakeColor;
                         fillIt();
@@ -244,8 +254,8 @@
                 },
             right : function() {
                     if (x < canvasWidth - snakeWidth) {
-                        ctx.fillStyle = canvasColor;
-                        fillIt();
+                        // ctx.fillStyle = canvasColor;
+                        // fillIt();
                         x += creepDistance;
                         ctx.fillStyle = snakeColor;
                         fillIt();
@@ -253,6 +263,101 @@
                     }    
                 }
         }
+
+
+
+
+
+
+        // ++++++++++++++++++++++++++++++++++++++++++++++++++++ END OF SNAKE DIRECTION and FILL ++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+        function fillEndUp(color = 'red') {
+            ctx.beginPath();
+            ctx.moveTo(posEndX + 40, posEndY + 40);
+            ctx.lineWidth = 2;
+            ctx.lineTo(posEndX, posEndY + 40);
+            ctx.strokeStyle = color;
+            ctx.stroke();
+        } 
+
+        function fillEndDown(color = 'red') {
+            ctx.beginPath();
+            ctx.moveTo(posEndX, posEndY + 1);
+            ctx.lineWidth = 2;
+            ctx.lineTo(posEndX + 40, posEndY + 1);
+            ctx.strokeStyle = color;
+            ctx.stroke();
+        } 
+
+        function fillEndLeft(color = 'red') {
+            ctx.beginPath();
+            ctx.moveTo(posEndX + 39, posEndY + 40);
+            ctx.lineWidth = 2;
+            ctx.lineTo(posEndX + 39, posEndY);
+            ctx.strokeStyle = color;
+            ctx.stroke();
+        } 
+
+        function fillEndRight(color = 'red') {
+            ctx.beginPath();
+            ctx.moveTo(posEndX + 1, posEndY);
+            ctx.lineWidth = 2;
+            ctx.lineTo(posEndX + 1, posEndY + 40);
+            ctx.strokeStyle = color;
+            ctx.stroke();
+        } 
+
+        var endDirection = {
+            up : function(positionX, positionY) {
+                    if (posEndY > 0) {
+                        posEndX = positionX;
+                        posEndY = positionY;
+                        fillEndUp();
+                        // fillEyes('up');
+                    }    
+                },
+            down : function(positionX, positionY) {
+                    if (posEndY < canvasHeight - snakeWidth) {
+                        posEndX = positionX;
+                        posEndY = positionY;
+                        fillEndDown();
+                        // fillEyes('down');
+                    }    
+                },
+            left : function(positionX, positionY) {
+                    if (posEndX > 0) {
+                        posEndX = positionX;
+                        posEndY = positionY;
+                        fillEndLeft();
+                        // fillEyes('left');
+                    }    
+                },
+            right : function(positionX, positionY) {
+                    if (posEndX < canvasWidth - snakeWidth) {
+                        posEndX = positionX;
+                        posEndY = positionY;
+                        fillEndRight();
+                        // fillEyes('right');
+                    }    
+                }
+        }
+
+
+        function createContext() {
+            var timeInfo = {};
+            timeInfo.xPlace = x;
+            timeInfo.yPlace = y;
+            timeInfo.direction = currentDirection;
+            return timeInfo;
+        }
+
+
+
+
+
+
+
+
         
         function nextRound() {
             creepDistance = 1;
@@ -263,7 +368,12 @@
             startMessage.className += ' hidden';
             // window.clearInterval(intervalId);
             intervalId = setInterval(function(orientation) {
+
+                ++iterator;
+                snakePositionHistory.push(createContext());
+                endSnakeData = snakePositionHistory[snakePositionHistory.length - snakeEndDistance];
                 orientation = currentDirection;
+
                 eatFood();
                 switch(orientation) {
                     case 'up':
@@ -282,6 +392,26 @@
                         direction.right();
                         break;
                 }
+
+                if (endSnakeData) {
+                    switch(endSnakeData.direction) {
+                        case 'up':
+                            endDirection.up(endSnakeData.xPlace, endSnakeData.yPlace);
+                            break;
+
+                        case 'down':
+                            endDirection.down(endSnakeData.xPlace, endSnakeData.yPlace - 1);
+                            break;
+
+                        case 'left':
+                            endDirection.left(endSnakeData.xPlace + 1, endSnakeData.yPlace);
+                            break;
+
+                        case 'right':
+                            endDirection.right(endSnakeData.xPlace - 1, endSnakeData.yPlace);
+                            break;
+                    }
+                }
             }, speed);
             intervalArray.push(intervalId);
         } 
@@ -298,6 +428,8 @@
             clearTimers()
             startState();
             setRound(false);
+            endSnakeData = {};
+            snakePositionHistory = [];
         }
 
         window.onkeydown = function(e) {

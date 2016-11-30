@@ -120,7 +120,26 @@
             }
         }
 
+        function refillAllUneatenFood() {
+            for (var i = 0; i < foodArray.length; i++) {
+                if (foodArray[i].eaten == false) {
+                    fillFood('red', '#003300', foodArray[i].randomCoordinateX, foodArray[i].randomCoordinateY);
+                }
+            }
+        }
+
         function fillFood(color1 = 'red', color2 = '#003300', xCoordinate = randomX(), yCoordinate = randomY()) {
+            
+
+            // Prevents fruit from being placed on the current snake position
+            var possibleFruitPlacementPosition = ctx.getImageData(xCoordinate, yCoordinate, 12, 12);
+            for (var i = 1; i < possibleFruitPlacementPosition.data.length; i += 4) {
+                if (possibleFruitPlacementPosition.data[i] == 255) {
+                    fillFood();
+                    console.log('Whoops!');
+                }
+            }
+            
             var randomObject = {};
             randomObject.randomCoordinateX = xCoordinate;
             randomObject.randomCoordinateY = yCoordinate;
@@ -153,7 +172,7 @@
                 // Hit boxes for food
                 switch(currentDirection) {
                     case 'up':
-                        if (y == centerY + element.randomCoordinateY - 5 && x >= centerX + element.randomCoordinateX - 50 && x <= centerX + element.randomCoordinateX + 5 && element.eaten == false) {
+                        if (y == centerY + element.randomCoordinateY + 5 && x >= centerX + element.randomCoordinateX - 50 && x <= centerX + element.randomCoordinateX + 5 && element.eaten == false) {
                             fillOverFood(canvasColor, centerX + element.randomCoordinateX - 6, centerY + element.randomCoordinateY - 6);
                             snakeEndDistance += 100;
                             element.eaten = true;
@@ -161,7 +180,7 @@
                         }
                         break;
                     case 'down':
-                        if (y == centerY + element.randomCoordinateY - 40 && x >= centerX + element.randomCoordinateX - 50 && x <= centerX + element.randomCoordinateX + 5 && element.eaten == false) {
+                        if (y == centerY + element.randomCoordinateY - 45 && x >= centerX + element.randomCoordinateX - 50 && x <= centerX + element.randomCoordinateX + 5 && element.eaten == false) {
                             fillOverFood(canvasColor, centerX + element.randomCoordinateX - 6, centerY + element.randomCoordinateY - 6);
                             snakeEndDistance += 100;
                             element.eaten = true;
@@ -238,8 +257,6 @@
                 case 'up':
                     console.log(direction);
                     var snakeFace = ctx.getImageData(x, y - 1, snakeWidth, 1);
-                    // ctx.fillStyle = 'black';
-                    // ctx.fillRect(x, y - 3, snakeWidth, 1);
                     for (var i = 1; i < snakeFace.data.length; i += 4) {
                         if (snakeFace.data[i] == 255) {
                             stopGame();
@@ -250,8 +267,6 @@
                 case 'down':
                     console.log(direction);
                     var snakeFace = ctx.getImageData(x, y + 40, snakeWidth, 1);
-                    // ctx.fillStyle = 'black';
-                    // ctx.fillRect(x, y + 42, snakeWidth, 1);
                     for (var i = 1; i < snakeFace.data.length; i += 4) {
                         if (snakeFace.data[i] == 255) {
                             stopGame();
@@ -262,9 +277,6 @@
                 case 'left':
                     console.log(direction);
                     var snakeFace = ctx.getImageData(x - 1, y, 1, snakeHeight);
-                    // console.log(snakeFace.data);
-                    // ctx.fillStyle = 'black';
-                    // ctx.fillRect((x - 3), y, 1, snakeWidth);
                     for (var i = 1; i < snakeFace.data.length; i += 4) {
                         if (snakeFace.data[i] == 255) {
                             stopGame();
@@ -275,9 +287,6 @@
                 case 'right':
                     console.log(direction);
                     var snakeFace = ctx.getImageData(x + 40, y, 1, snakeHeight);
-                    // console.log(snakeFace.data);
-                    // ctx.fillStyle = 'black';
-                    // ctx.fillRect(x + 42, y, 1, snakeWidth);
                     for (var i = 1; i < snakeFace.data.length; i += 4) {
                         if (snakeFace.data[i] == 255) {
                             stopGame();
@@ -426,7 +435,8 @@
         function nextRound() {
             foodEaten = 0;
             snakeEndDistance = 100;
-            creepDistance = 1;
+            speed *= 1.1;
+            creepDistance = 1; 
             ctx.fillStyle = "rgb(125,125,255)";
             ctx.fillRect(0, 0, canvasWidth, canvasHeight);
             generateFood();
@@ -497,7 +507,8 @@
 
         function stopGame() {
             foodEaten = 0;
-            creepDistance = 0;
+            speed = 15;
+            creepDistance = 1;
             startMessage.className = "startMessage"; 
             clearTimers()
             startState();

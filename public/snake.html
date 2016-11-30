@@ -260,6 +260,7 @@
                     for (var i = 1; i < snakeFace.data.length; i += 4) {
                         if (snakeFace.data[i] == 255) {
                             stopGame();
+                            return console.log('GAME OVER MAN!!!');
                         }
                     }
                     break;
@@ -270,6 +271,7 @@
                     for (var i = 1; i < snakeFace.data.length; i += 4) {
                         if (snakeFace.data[i] == 255) {
                             stopGame();
+                            return console.log('GAME OVER MAN!!!');
                         }
                     }
                     break;
@@ -280,6 +282,7 @@
                     for (var i = 1; i < snakeFace.data.length; i += 4) {
                         if (snakeFace.data[i] == 255) {
                             stopGame();
+                            return console.log('GAME OVER MAN!!!');
                         }
                     }
                     break;
@@ -290,6 +293,7 @@
                     for (var i = 1; i < snakeFace.data.length; i += 4) {
                         if (snakeFace.data[i] == 255) {
                             stopGame();
+                            return console.log('GAME OVER MAN!!!');
                         }
                     }
                     break;
@@ -506,6 +510,8 @@
         }
 
         function stopGame() {
+            console.log('stopGame fired');
+            document.getElementById('startMessage').innerHTML = 'GAME OVER at Round ' + document.getElementById('roundNumber').innerHTML + '<br> <br>Press Space to Start';
             foodEaten = 0;
             speed = 15;
             creepDistance = 1;
@@ -516,7 +522,6 @@
             endSnakeData = {};
             snakePositionHistory = [];
             snakeEndDistance = 100;
-            document.getElementById('startMessage').innerHTML = 'GAME OVER<br> <br>Press Space to Start';
         }
 
         window.onkeydown = function(e) {

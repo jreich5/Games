@@ -83,6 +83,8 @@
         var centerY = canvas.height / 2;
         var radius = 5;
         var snakeEndDistance = 100;
+        var numberOfFoodItems = 5;
+        var foodEaten = 0;
 
         // End of Snake Eraser Variables
 
@@ -140,7 +142,7 @@
 
         function generateFood() {
             foodArray = [];
-            for (var i = 0; i < 5; i ++) {
+            for (var i = 0; i < numberOfFoodItems; i++) {
                 foodArray.push(fillFood());
             }
         }
@@ -155,6 +157,7 @@
                             fillOverFood(canvasColor, centerX + element.randomCoordinateX - 6, centerY + element.randomCoordinateY - 6);
                             snakeEndDistance += 100;
                             element.eaten = true;
+                            foodEaten += 1;
                         }
                         break;
                     case 'down':
@@ -162,6 +165,7 @@
                             fillOverFood(canvasColor, centerX + element.randomCoordinateX - 6, centerY + element.randomCoordinateY - 6);
                             snakeEndDistance += 100;
                             element.eaten = true;
+                            foodEaten += 1;
                         }
                         break;
                     case 'left':
@@ -169,6 +173,7 @@
                             fillOverFood(canvasColor, centerX + element.randomCoordinateX - 6, centerY + element.randomCoordinateY - 6);
                             snakeEndDistance += 100;
                             element.eaten = true;
+                            foodEaten += 1;
                         }
                         break;
                     case 'right':
@@ -176,6 +181,7 @@
                             fillOverFood(canvasColor, centerX + element.randomCoordinateX - 6, centerY + element.randomCoordinateY - 6);
                             snakeEndDistance += 100;
                             element.eaten = true;
+                            foodEaten += 1;
                         }
                         break;
                 }
@@ -418,6 +424,7 @@
 
         
         function nextRound() {
+            foodEaten = 0;
             snakeEndDistance = 100;
             creepDistance = 1;
             ctx.fillStyle = "rgb(125,125,255)";
@@ -434,6 +441,9 @@
                 // detectSnakeCollision(currentDirection);
 
                 eatFood();
+                if (foodEaten == foodArray.length) {
+                    nextRound();
+                }
                 switch(orientation) {
                     case 'up':
                         direction.up();
@@ -486,6 +496,7 @@
         }
 
         function stopGame() {
+            foodEaten = 0;
             creepDistance = 0;
             startMessage.className = "startMessage"; 
             clearTimers()
